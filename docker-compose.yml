@@ -45,6 +45,7 @@ services:
       - 3000
     tty: true
     stdin_open: true 
+    restart: always
       
 volumes:
   conf:
