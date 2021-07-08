@@ -1,0 +1,52 @@
+version: '3.0'
+services:
+  # Reverse proxy를 구현하는 NGINX 서버
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    container_name: nginx-proxy
+    volumes:
+      - conf:/etc/nginx/conf.d
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - dhparam:/etc/nginx/dhparam
+      - /srv/nginx/certs:/etc/nginx/certs:ro
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    ports:
+      - 80:80
+      - 443:443
+
+  # Let's encrypt 자동화 컨테이너
+  letsencrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    container_name: letsencrypt
+    depends_on:
+      - nginx-proxy
+    volumes:
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - dhparam:/etc/nginx/dhparam:ro
+      - acme:/etc/acme.sh
+      - /srv/nginx/certs:/etc/nginx/certs
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - DEFAULT_EMAIL=unknownpgr@gmail.com
+      - NGINX_PROXY_CONTAINER=nginx-proxy
+
+  frontend:
+    image: node:14
+    environment:
+      - VIRTUAL_HOST=h-cu.be
+      - LETSENCRYPT_HOST=h-cu.be
+    volumes:
+      - /srv/server-frontend/src:/app
+    working_dir: /app
+    entrypoint: ["yarn", "start"]
+    expose:
+      - 3000
+      
+volumes:
+  conf:
+  vhost:
+  html:
+  dhparam:
+  acme:
