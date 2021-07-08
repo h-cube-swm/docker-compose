@@ -43,6 +43,8 @@ services:
     entrypoint: ["yarn", "start"]
     expose:
       - 3000
+    tty: true
+    stdin_open: true 
       
 volumes:
   conf:
