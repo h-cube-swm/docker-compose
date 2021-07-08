@@ -32,6 +32,24 @@ services:
       - DEFAULT_EMAIL=unknownpgr@gmail.com
       - NGINX_PROXY_CONTAINER=nginx-proxy
 
+  # 데이터베이스 서버
+  db:
+    image: mysql:8.0
+    volumes:
+      - /srv/server-db/mysql:/var/lib/mysql
+
+  # 데이터베이스 대시보드
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    expose:
+      - 80
+    environment:
+      - PMA_ARBITRARY=1
+      - VIRTUAL_HOST=db.h-cu.be
+      - LETSENCRYPT_HOST=db.h-cu.be
+
+  # 프론트엔드 서버
   frontend:
     image: node:14
     environment:
@@ -46,7 +64,7 @@ services:
     tty: true
     stdin_open: true 
     restart: always
-      
+
 volumes:
   conf:
   vhost:
