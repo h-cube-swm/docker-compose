@@ -81,6 +81,21 @@ services:
     stdin_open: true 
     restart: always
 
+  # 프론트엔드 상호작용 테스트 서버
+  interaction:
+    image: node:14
+    environment:
+      - VIRTUAL_HOST=interaction.h-cu.be
+      - LETSENCRYPT_HOST=interaction.h-cu.be
+    volumes:
+      - /srv/server-interaction/src:/app
+    working_dir: /app
+    entrypoint: ["yarn", "start"]
+    expose:
+      - 3000
+    tty: true
+    stdin_open: true
+    restart: always
 volumes:
   conf:
   vhost:
