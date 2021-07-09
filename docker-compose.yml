@@ -110,6 +110,7 @@ services:
       - /srv/server-logging/django:/var/log/django_log
     expose:
       - 8000
+    restart: always
 
 volumes:
   conf:
