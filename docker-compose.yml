@@ -51,6 +51,8 @@ services:
       - PGADMIN_DEFAULT_PASSWORD
       - VIRTUAL_HOST=db.${HOST}
       - LETSENCRYPT_HOST=db.${HOST}
+    expose:
+      - 80
 
   # 프론트엔드 개발 서버
   frontend-dev:
