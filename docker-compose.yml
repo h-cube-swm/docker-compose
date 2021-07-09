@@ -29,7 +29,7 @@ services:
       - /srv/nginx/certs:/etc/nginx/certs
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
-      - DEFAULT_EMAIL=unknownpgr@gmail.com
+      - DEFAULT_EMAIL=${EMAIL}
       - NGINX_PROXY_CONTAINER=nginx-proxy
 
   # 데이터베이스 서버
@@ -37,6 +37,8 @@ services:
     image: mysql:8.0
     volumes:
       - /srv/server-db/mysql:/var/lib/mysql
+    environment:
+      - DB_PASSWORD=${DB_PASSWORD}
 
   # 데이터베이스 대시보드
   phpmyadmin:
@@ -46,15 +48,15 @@ services:
       - 80
     environment:
       - PMA_ARBITRARY=1
-      - VIRTUAL_HOST=db.h-cu.be
-      - LETSENCRYPT_HOST=db.h-cu.be
+      - VIRTUAL_HOST=db.${HOST}
+      - LETSENCRYPT_HOST=db.${HOST}
 
   # 프론트엔드 개발 서버
   frontend-dev:
     image: node:14
     environment:
-      - VIRTUAL_HOST=dev.h-cu.be
-      - LETSENCRYPT_HOST=dev.h-cu.be
+      - VIRTUAL_HOST=dev.${HOST}
+      - LETSENCRYPT_HOST=dev.${HOST}
     volumes:
       - /srv/server-frontend-dev/src:/app
     working_dir: /app
@@ -69,8 +71,8 @@ services:
   frontend:
     image: node:14
     environment:
-      - VIRTUAL_HOST=h-cu.be
-      - LETSENCRYPT_HOST=h-cu.be
+      - VIRTUAL_HOST=${HOST}
+      - LETSENCRYPT_HOST=${HOST}
     volumes:
       - /srv/server-frontend/src:/app
     working_dir: /app
@@ -85,8 +87,8 @@ services:
   interaction:
     image: node:14
     environment:
-      - VIRTUAL_HOST=interaction.h-cu.be
-      - LETSENCRYPT_HOST=interaction.h-cu.be
+      - VIRTUAL_HOST=interaction.${HOST}
+      - LETSENCRYPT_HOST=interaction.${HOST}
     volumes:
       - /srv/server-interaction/src:/app
     working_dir: /app
@@ -102,8 +104,8 @@ services:
     build: /srv/server-backend
     container_name: gunicorn-backend
     environment:
-      - VIRTUAL_HOST=api.h-cu.be
-      - LETSENCRYPT_HOST=api.h-cu.be
+      - VIRTUAL_HOST=api.${HOST}
+      - LETSENCRYPT_HOST=api.${HOST}
     volumes:
       - /srv/server-backend:/code
       - /srv/server-logging/gunicorn:/var/log/gunicorn_log
