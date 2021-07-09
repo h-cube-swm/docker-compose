@@ -49,7 +49,23 @@ services:
       - VIRTUAL_HOST=db.h-cu.be
       - LETSENCRYPT_HOST=db.h-cu.be
 
-  # 프론트엔드 서버
+  # 프론트엔드 개발 서버
+  frontend-dev:
+    image: node:14
+    environment:
+      - VIRTUAL_HOST=dev.h-cu.be
+      - LETSENCRYPT_HOST=dev.h-cu.be
+    volumes:
+      - /srv/server-frontend-dev/src:/app
+    working_dir: /app
+    entrypoint: ["yarn", "start"]
+    expose:
+      - 3000
+    tty: true
+    stdin_open: true
+    restart: always
+
+  # 프론트엔드 프로덕션 서버
   frontend:
     image: node:14
     environment:
