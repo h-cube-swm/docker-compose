@@ -34,14 +34,14 @@ services:
 
   # 데이터베이스 서버
   db:
-    image: postgres
+    image: postgres:latest
     restart: always
     environment:
       - POSTGRES_USER
       - POSTGRES_PASSWORD
       - POSTGRES_DB
     volumes:
-      - /srv/server-db/mysql:/var/lib/postgresql/data
+      - /srv/server-db/postgresql:/var/lib/postgresql/data
 
   # 데이터베이스 대시보드
   dashboard:
