@@ -1,4 +1,4 @@
-version: '3.0'
+version: "3.0"
 services:
   # Reverse proxy를 구현하는 NGINX 서버
   nginx-proxy:
@@ -78,7 +78,7 @@ services:
     expose:
       - 3000
     tty: true
-    stdin_open: true 
+    stdin_open: true
     restart: always
 
   # 프론트엔드 상호작용 테스트 서버
@@ -96,6 +96,21 @@ services:
     tty: true
     stdin_open: true
     restart: always
+
+  # 백엔드 api 서버
+  gunicorn-backend:
+    build: /srv/server-backend
+    container_name: gunicorn-backend
+    environment:
+      - VIRTUAL_HOST=api.h-cu.be
+      - LETSENCRYPT_HOST=api.h-cu.be
+    volumes:
+      - /srv/server-backend:/code
+      - /srv/server-logging/gunicorn:/var/log/gunicorn_log
+      - /srv/server-logging/django:/var/log/django_log
+    expose:
+      - 8000
+
 volumes:
   conf:
   vhost:
