@@ -34,20 +34,21 @@ services:
 
   # 데이터베이스 서버
   db:
-    image: mysql:8.0
-    volumes:
-      - /srv/server-db/mysql:/var/lib/mysql
+    image: postgres
+    restart: always
     environment:
-      - DB_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+    volumes:
+      - /srv/server-db/mysql:/var/lib/postgresql/data
 
   # 데이터베이스 대시보드
-  phpmyadmin:
-    image: phpmyadmin
-    restart: always
-    expose:
-      - 80
+  dashboard:
+    image: dpage/pgadmin4
     environment:
-      - PMA_ARBITRARY=1
+      - PGADMIN_DEFAULT_EMAIL
+      - PGADMIN_DEFAULT_PASSWORD
       - VIRTUAL_HOST=db.${HOST}
       - LETSENCRYPT_HOST=db.${HOST}
 
