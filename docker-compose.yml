@@ -118,6 +118,7 @@ services:
       - /srv/server-logging/django:/var/log/django_log
     expose:
       - 8000
+    entrypoint: ['sh','init.sh']
     restart: always
 
 volumes:
