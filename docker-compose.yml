@@ -110,6 +110,9 @@ services:
     build: /srv/server-backend
     container_name: gunicorn-backend
     environment:
+      - DJANGO_SUPERUSER_USERNAME
+      - DJANGO_SUPERUSER_PASSWORD
+      - DJANGO_SUPERUSER_EMAIL
       - VIRTUAL_HOST=api.${HOST}
       - LETSENCRYPT_HOST=api.${HOST}
     volumes:
