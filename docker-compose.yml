@@ -32,18 +32,6 @@ services:
       - DEFAULT_EMAIL=${EMAIL}
       - NGINX_PROXY_CONTAINER=nginx-proxy
 
-  # 데이터베이스 서버
-  db:
-    container_name: db
-    image: postgres:latest
-    restart: always
-    environment:
-      - POSTGRES_USER
-      - POSTGRES_PASSWORD
-      - POSTGRES_DB
-    volumes:
-      - /srv/server-db/postgresql:/var/lib/postgresql/data
-
   # 데이터베이스 대시보드
   dashboard:
     image: dpage/pgadmin4
@@ -58,8 +46,6 @@ services:
   # 프론트엔드 개발 서버
   frontend-dev:
     image: node:14
-    depends_on:
-      - db
     environment:
       - VIRTUAL_HOST=dev.${HOST}
       - LETSENCRYPT_HOST=dev.${HOST}
@@ -114,15 +100,17 @@ services:
       - DJANGO_SUPERUSER_USERNAME
       - DJANGO_SUPERUSER_PASSWORD
       - DJANGO_SUPERUSER_EMAIL
-      - POSTGRES_USER
-      - POSTGRES_PASSWORD
-      - POSTGRES_HOST
+      - POSTGRES_USER_PRODUCTION
+      - POSTGRES_PASSWORD_PRODUCTION
+      - POSTGRES_DB_PRODUCTION
+      - POSTGRES_HOST_PRODUCTION
       - MAILGUN_API_KEY
       - EMAIL_HOST
       - EMAIL_HOST_USER
       - EMAIL_HOST_PASSWORD
       - VIRTUAL_HOST=api.${HOST}
       - LETSENCRYPT_HOST=api.${HOST}
+      - DEBUG
     volumes:
       - /srv/server-backend:/code
       - /srv/server-logging/gunicorn:/var/log/gunicorn_log
@@ -131,6 +119,21 @@ services:
       - 8000
     entrypoint: ["sh", "init.sh"]
     restart: always
+
+  # CI/CD 서버
+  cicd:
+    image: node:14
+    working_dir: /app/src
+    environment:
+      - VIRTUAL_HOST=cicd.${HOST}
+      - LETSENCRYPT_HOST=cicd.${HOST}
+    volumes:
+      - /srv/server-cicd:/app
+      - /srv/server-cicd/deploy-keys/:/root/.ssh
+      - /srv/server-frontend:/frontend
+    expose:
+      - 8080
+    entrypoint: ["node", "index.js"]
 
 volumes:
   conf:
