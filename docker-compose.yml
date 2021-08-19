@@ -61,18 +61,10 @@ services:
 
   # 프론트엔드 프로덕션 서버
   frontend:
-    image: node:14
+    build: /srv/server-frontend/src
     environment:
       - VIRTUAL_HOST=${HOST}
       - LETSENCRYPT_HOST=${HOST}
-    volumes:
-      - /srv/server-frontend/src:/app
-    working_dir: /app
-    entrypoint: ["yarn", "start"]
-    expose:
-      - 3000
-    tty: true
-    stdin_open: true
     restart: always
 
   # 프론트엔드 상호작용 테스트 서버
