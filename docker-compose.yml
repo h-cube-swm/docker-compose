@@ -120,6 +120,13 @@ services:
     entrypoint: ["sh", "init.sh"]
     restart: always
 
+  # 질문 추천 서버
+  suggestion:
+    build: /srv/server-suggestion
+    environment:
+      - VIRTUAL_HOST=suggestion.${HOST}
+      - LETSENCRYPT_HOST=suggestion.${HOST}
+
   # CI/CD 서버
   cicd:
     image: node:14
