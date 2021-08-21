@@ -32,17 +32,6 @@ services:
       - DEFAULT_EMAIL=${EMAIL}
       - NGINX_PROXY_CONTAINER=nginx-proxy
 
-  # 데이터베이스 대시보드
-  dashboard:
-    image: dpage/pgadmin4
-    environment:
-      - PGADMIN_DEFAULT_EMAIL
-      - PGADMIN_DEFAULT_PASSWORD
-      - VIRTUAL_HOST=db.${HOST}
-      - LETSENCRYPT_HOST=db.${HOST}
-    expose:
-      - 80
-
   # 프론트엔드 개발 서버
   frontend-dev:
     image: node:14
@@ -86,31 +75,25 @@ services:
   # 백엔드 api 서버
   gunicorn-backend:
     build: /srv/server-backend
+    image: gunicorn-backend
     container_name: gunicorn-backend
     environment:
-      - SECRET_KEY
-      - DJANGO_SUPERUSER_USERNAME
-      - DJANGO_SUPERUSER_PASSWORD
-      - DJANGO_SUPERUSER_EMAIL
-      - POSTGRES_USER_PRODUCTION
-      - POSTGRES_PASSWORD_PRODUCTION
-      - POSTGRES_DB_PRODUCTION
-      - POSTGRES_HOST_PRODUCTION
-      - MAILGUN_API_KEY
-      - EMAIL_HOST
-      - EMAIL_HOST_USER
-      - EMAIL_HOST_PASSWORD
       - VIRTUAL_HOST=api.${HOST}
       - LETSENCRYPT_HOST=api.${HOST}
-      - DEBUG
     volumes:
-      - /srv/server-backend:/code
       - /srv/server-logging/gunicorn:/var/log/gunicorn_log
       - /srv/server-logging/django:/var/log/django_log
-    expose:
-      - 8000
-    entrypoint: ["sh", "init.sh"]
     restart: always
+
+  # 백엔드 api 개발 서버
+  backend-dev:
+    build: /srv/server-backend-dev
+    environment:
+      - VIRTUAL_HOST=dev.api.${HOST}
+      - LETSENCRYPT_HOST=dev.api.${HOST}
+      - DEBUG=True
+    volumes:
+      - /srv/server-backend:/app
 
   # 질문 추천 서버
   suggestion:
@@ -118,21 +101,6 @@ services:
     environment:
       - VIRTUAL_HOST=suggestion.${HOST}
       - LETSENCRYPT_HOST=suggestion.${HOST}
-
-  # CI/CD 서버
-  cicd:
-    image: node:14
-    working_dir: /app/src
-    environment:
-      - VIRTUAL_HOST=cicd.${HOST}
-      - LETSENCRYPT_HOST=cicd.${HOST}
-    volumes:
-      - /srv/server-cicd:/app
-      - /srv/server-cicd/deploy-keys/:/root/.ssh
-      - /srv/server-frontend:/frontend
-    expose:
-      - 8080
-    entrypoint: ["node", "index.js"]
 
 volumes:
   conf:
