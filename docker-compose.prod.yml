@@ -1,0 +1,84 @@
+version: "3.0"
+services:
+  # Reverse proxy를 구현하는 NGINX 서버
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    container_name: nginx-proxy
+    volumes:
+      - conf:/etc/nginx/conf.d
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - dhparam:/etc/nginx/dhparam
+      - /srv/nginx/certs:/etc/nginx/certs:ro
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    ports:
+      - 80:80
+      - 443:443
+
+  # Let's encrypt 자동화 컨테이너
+  letsencrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    container_name: letsencrypt
+    depends_on:
+      - nginx-proxy
+    volumes:
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - dhparam:/etc/nginx/dhparam:ro
+      - acme:/etc/acme.sh
+      - /srv/nginx/certs:/etc/nginx/certs
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - DEFAULT_EMAIL=${EMAIL}
+      - NGINX_PROXY_CONTAINER=nginx-proxy
+
+  # 프론트엔드 프로덕션 서버
+  frontend:
+    build: /srv/server-frontend/src
+    environment:
+      - VIRTUAL_HOST=${HOST}
+      - LETSENCRYPT_HOST=${HOST}
+    restart: always
+
+  # 백엔드 api 서버
+  gunicorn-backend:
+    build: /srv/server-backend
+    image: gunicorn-backend
+    container_name: gunicorn-backend
+    environment:
+      - VIRTUAL_HOST=api.${HOST}
+      - LETSENCRYPT_HOST=api.${HOST}
+    volumes:
+      - /srv/server-logging/gunicorn:/var/log/gunicorn_log
+      - /srv/server-logging/django:/var/log/django_log
+    restart: always
+
+  # 프론트엔드 상호작용 테스트 서버
+  interaction:
+    image: node:14
+    environment:
+      - VIRTUAL_HOST=interaction.${HOST}
+      - LETSENCRYPT_HOST=interaction.${HOST}
+    volumes:
+      - /srv/server-interaction/src:/app
+    working_dir: /app
+    entrypoint: ["yarn", "start"]
+    expose:
+      - 3000
+    tty: true
+    stdin_open: true
+    restart: always
+
+  # 질문 추천 서버
+  suggestion:
+    build: /srv/server-suggestion
+    environment:
+      - VIRTUAL_HOST=suggestion.${HOST}
+      - LETSENCRYPT_HOST=suggestion.${HOST}
+
+volumes:
+  conf:
+  vhost:
+  html:
+  dhparam:
+  acme:

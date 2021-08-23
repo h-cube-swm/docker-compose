@@ -36,71 +36,28 @@ services:
   frontend-dev:
     image: node:14
     environment:
-      - VIRTUAL_HOST=dev.${HOST}
-      - LETSENCRYPT_HOST=dev.${HOST}
-    volumes:
-      - /srv/server-frontend-dev/src:/app
-    working_dir: /app
-    entrypoint: ["yarn", "start"]
-    expose:
-      - 3000
-    tty: true
-    stdin_open: true
-    restart: always
-
-  # 프론트엔드 프로덕션 서버
-  frontend:
-    build: /srv/server-frontend/src
-    environment:
       - VIRTUAL_HOST=${HOST}
       - LETSENCRYPT_HOST=${HOST}
-    restart: always
-
-  # 프론트엔드 상호작용 테스트 서버
-  interaction:
-    image: node:14
-    environment:
-      - VIRTUAL_HOST=interaction.${HOST}
-      - LETSENCRYPT_HOST=interaction.${HOST}
     volumes:
-      - /srv/server-interaction/src:/app
+      - /srv/server-frontend/src:/app
     working_dir: /app
     entrypoint: ["yarn", "start"]
     expose:
       - 3000
     tty: true
     stdin_open: true
-    restart: always
-
-  # 백엔드 api 서버
-  gunicorn-backend:
-    build: /srv/server-backend
-    image: gunicorn-backend
-    container_name: gunicorn-backend
-    environment:
-      - VIRTUAL_HOST=api.${HOST}
-      - LETSENCRYPT_HOST=api.${HOST}
-    volumes:
-      - /srv/server-logging/gunicorn:/var/log/gunicorn_log
-      - /srv/server-logging/django:/var/log/django_log
     restart: always
 
   # 백엔드 api 개발 서버
   backend-dev:
-    build: /srv/server-backend-dev
+    build: /srv/server-backend
     environment:
-      - VIRTUAL_HOST=dev.api.${HOST}
-      - LETSENCRYPT_HOST=dev.api.${HOST}
+      - VIRTUAL_HOST=api.${HOST}
+      - LETSENCRYPT_HOST=api.${HOST}
       - DEBUG=True
     volumes:
       - /srv/server-backend:/app
 
-  # 질문 추천 서버
-  suggestion:
-    build: /srv/server-suggestion
-    environment:
-      - VIRTUAL_HOST=suggestion.${HOST}
-      - LETSENCRYPT_HOST=suggestion.${HOST}
 
 volumes:
   conf:
