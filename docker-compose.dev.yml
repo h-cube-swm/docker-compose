@@ -81,6 +81,19 @@ services:
       - VIRTUAL_HOST=suggestion.${HOST}
       - LETSENCRYPT_HOST=suggestion.${HOST}
 
+  # 백엔드 api express 포팅
+  backend-dev-express:
+    image: node:14
+    environment:
+      - VIRTUAL_HOST=express.${HOST}
+      - LETSENCRYPT_HOST=express.${HOST}
+    volumes:
+      - /srv/server-backend-express:/app
+    working_dir: /app
+    expose:
+      - 3000
+    entrypoint: ["npm", "start"]
+
 volumes:
   conf:
   vhost:
