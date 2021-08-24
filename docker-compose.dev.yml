@@ -58,6 +58,28 @@ services:
     volumes:
       - /srv/server-backend:/app
 
+  # 프론트엔드 상호작용 테스트 서버
+  interaction:
+    image: node:14
+    environment:
+      - VIRTUAL_HOST=interaction.${HOST}
+      - LETSENCRYPT_HOST=interaction.${HOST}
+    volumes:
+      - /srv/server-interaction/src:/app
+    working_dir: /app
+    entrypoint: ["yarn", "start"]
+    expose:
+      - 3000
+    tty: true
+    stdin_open: true
+    restart: always
+
+  # 질문 추천 서버
+  suggestion:
+    build: /srv/server-suggestion
+    environment:
+      - VIRTUAL_HOST=suggestion.${HOST}
+      - LETSENCRYPT_HOST=suggestion.${HOST}
 
 volumes:
   conf:
