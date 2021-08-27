@@ -48,16 +48,6 @@ services:
     stdin_open: true
     restart: always
 
-  # 백엔드 api 개발 서버
-  backend-dev:
-    build: /srv/server-backend
-    environment:
-      - VIRTUAL_HOST=api.${HOST}
-      - LETSENCRYPT_HOST=api.${HOST}
-      - DEBUG=True
-    volumes:
-      - /srv/server-backend:/app
-
   # 프론트엔드 상호작용 테스트 서버
   interaction:
     image: node:14
@@ -74,6 +64,19 @@ services:
     stdin_open: true
     restart: always
 
+  # 프론트엔드 상호작용 동시작업 포워딩 서버
+  interaction-backend:
+    image: node:14
+    environment:
+      - VIRTUAL_HOST=back.${HOST}
+      - LETSENCRYPT_HOST=back.${HOST}
+    volumes:
+      - /srv/server-ot:/app
+    working_dir: /app
+    entrypoint: ["yarn", "nodemon"]
+    expose:
+      - 80
+
   # 질문 추천 서버
   suggestion:
     build: /srv/server-suggestion
@@ -81,12 +84,24 @@ services:
       - VIRTUAL_HOST=suggestion.${HOST}
       - LETSENCRYPT_HOST=suggestion.${HOST}
 
-  # 백엔드 api express 포팅
+  # Mongodb
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${DB_ID}
+      - MONGO_INITDB_ROOT_PASSWORD=${DB_PW}
+    ports:
+      - 27017:27017
+
+  # API 서버
   backend-dev-express:
     image: node:14
     environment:
-      - VIRTUAL_HOST=express.${HOST}
-      - LETSENCRYPT_HOST=express.${HOST}
+      - VIRTUAL_HOST=api.${HOST}
+      - LETSENCRYPT_HOST=api.${HOST}
+      - DB_USERNAME=${DB_ID}
+      - DB_PASSWORD=${DB_PW}
     volumes:
       - /srv/server-backend-express:/app
     working_dir: /app
