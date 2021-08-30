@@ -102,6 +102,8 @@ services:
       - LETSENCRYPT_HOST=api.${HOST}
       - DB_USERNAME=${DB_ID}
       - DB_PASSWORD=${DB_PW}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     volumes:
       - /srv/server-backend-express:/app
     working_dir: /app
