@@ -84,35 +84,6 @@ services:
       - VIRTUAL_HOST=suggestion.${HOST}
       - LETSENCRYPT_HOST=suggestion.${HOST}
 
-  # Mongodb
-  mongo:
-    image: mongo
-    restart: always
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${DB_ID}
-      - MONGO_INITDB_ROOT_PASSWORD=${DB_PW}
-    ports:
-      - 27017:27017
-  
-  # Mongo-Express
-  mongo-express:
-    image: mongo-express:0.54
-    depends_on:
-      - mongo
-    environment:
-      - ME_CONFIG_MONGODB_ADMINUSERNAME=${DB_ID}
-      - ME_CONFIG_MONGODB_ADMINPASSWORD=${DB_PW}
-      - ME_CONFIG_MONGODB_SERVER=mongo
-      - ME_CONFIG_BASICAUTH_USERNAME=${hcube}
-      - ME_CONFIG_BASICAUTH_PASSWORD=${ADMIN_PW}
-      - VIRTUAL_HOST=db.${HOST}
-      - LETSENCRYPT_HOST=db.${HOST}
-    expose:
-      - 8081
-    links:
-      - mongo:mongo
-    restart: always
-
   # API 서버
   backend-dev-express:
     image: node:14
