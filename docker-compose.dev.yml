@@ -86,7 +86,7 @@ services:
 
   # API 서버
   backend-dev-express:
-    image: node:14
+    build: /srv/server-backend-express
     environment:
       - VIRTUAL_HOST=api.${HOST}
       - LETSENCRYPT_HOST=api.${HOST}
@@ -99,7 +99,6 @@ services:
     working_dir: /app
     expose:
       - 3000
-    entrypoint: ["npm", "start"]
 
 volumes:
   conf:
