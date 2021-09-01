@@ -98,7 +98,7 @@ services:
     working_dir: /app
     expose:
       - 3000
-    entrypoint: ["npm", "start"]
+    entrypoint: ["yarn", "nodemon"]
 
 volumes:
   conf:
