@@ -40,17 +40,25 @@ services:
       - LETSENCRYPT_HOST=${HOST}
     restart: always
 
-  # 백엔드 api 서버
-  backend-prod:
-    build: /srv/server-backend
+  # API 서버
+  backend-express:
+    build: /srv/server-backend-express
     environment:
       - VIRTUAL_HOST=api.${HOST}
       - LETSENCRYPT_HOST=api.${HOST}
+      - DB_USERNAME=${DB_ID}
+      - DB_PASSWORD=${DB_PW}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     volumes:
-      - /srv/server-logging/gunicorn:/var/log/gunicorn_log
-      - /srv/server-logging/django:/var/log/django_log
+      - /srv/server-backend-express:/app
+      - /app/node_modules
+    working_dir: /app
+    expose:
+      - 3000
     restart: always
 
+  # 인증 서버
   auth:
     image: node:14
     environment:
