@@ -33,7 +33,7 @@ services:
       - NGINX_PROXY_CONTAINER=nginx-proxy
 
   # 프론트엔드 프로덕션 서버
-  frontend:
+  frontend-prod:
     build: /srv/server-frontend/src
     environment:
       - VIRTUAL_HOST=${HOST}
@@ -41,7 +41,7 @@ services:
     restart: always
 
   # 백엔드 api 서버
-  backend:
+  backend-prod:
     build: /srv/server-backend
     environment:
       - VIRTUAL_HOST=api.${HOST}
@@ -50,6 +50,16 @@ services:
       - /srv/server-logging/gunicorn:/var/log/gunicorn_log
       - /srv/server-logging/django:/var/log/django_log
     restart: always
+
+  auth:
+    image: node:14
+    environment:
+      - VIRTUAL_HOST=auth.${HOST}
+      - LETSENCRYPT_HOST=auth.${HOST}
+    volumes:
+      - /srv/server-auth:/app
+    working_dir: /app
+    entrypoint: ["yarn", "nodemon", "index.js"]
 
 volumes:
   conf:
