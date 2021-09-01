@@ -46,8 +46,7 @@ services:
     environment:
       - VIRTUAL_HOST=api.${HOST}
       - LETSENCRYPT_HOST=api.${HOST}
-      - DB_USERNAME=${DB_ID}
-      - DB_PASSWORD=${DB_PW}
+      - DB_URL=${DB_URL}
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     volumes:
