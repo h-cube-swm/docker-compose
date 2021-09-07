@@ -63,6 +63,9 @@ services:
     environment:
       - VIRTUAL_HOST=auth.${HOST}
       - LETSENCRYPT_HOST=auth.${HOST}
+      - CLIENT_ID=39774c19f10a8740f6838ecd0f51efcd
+      - CALLBACK_URL=https://auth.the-form.io/oauth/kakao/callback
+      - ROOT_DOMAIN=the-form.io
     volumes:
       - /srv/server-auth:/app
     working_dir: /app
