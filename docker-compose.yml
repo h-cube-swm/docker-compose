@@ -83,6 +83,8 @@ services:
     environment:
       - VIRTUAL_HOST=suggestion.${HOST}
       - LETSENCRYPT_HOST=suggestion.${HOST}
+    volumes:
+      - /srv/server-suggestion:/app
 
   # API 서버
   backend-dev-express:
@@ -96,8 +98,6 @@ services:
     volumes:
       - /srv/server-backend-express:/app
     working_dir: /app
-    expose:
-      - 3000
     entrypoint: ["yarn", "nodemon"]
 
 volumes:
