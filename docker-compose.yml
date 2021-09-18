@@ -82,6 +82,7 @@ services:
     build: /srv/server-suggestion
     environment:
       - VIRTUAL_HOST=suggestion.${HOST}
+      - VIRTUAL_PORT=5000 # 왜 이것만 이렇게 해줘야 되는지??
       - LETSENCRYPT_HOST=suggestion.${HOST}
     volumes:
       - /srv/server-suggestion:/app
@@ -99,6 +100,15 @@ services:
       - /srv/server-backend-express:/app
     working_dir: /app
     entrypoint: ["yarn", "nodemon"]
+
+  # 인증 서버
+  auth:
+    image: nginx
+    environment:
+      - VIRTUAL_HOST=auth.${HOST}
+      - LETSENCRYPT_HOST=auth.${HOST}
+    volumes:
+      - /srv/server-auth/public:/usr/share/nginx/html
 
 volumes:
   conf:
