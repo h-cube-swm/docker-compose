@@ -101,6 +101,19 @@ services:
     working_dir: /app
     entrypoint: ["yarn", "nodemon"]
 
+  # 이미지 서버
+  backend-images:
+    image: node:14
+    environment:
+      - VIRTUAL_HOST=images.${HOST}
+      - LETSENCRYPT_HOST=images.${HOST}
+    volumes:
+      - /srv/server-backend-images:/app
+    working_dir: /app
+    entrypoint: ["yarn", "nodemon"]
+    expose:
+      - 80
+
   # 인증 서버
   auth:
     image: nginx
