@@ -9,6 +9,7 @@ services:
       - vhost:/etc/nginx/vhost.d
       - html:/usr/share/nginx/html
       - dhparam:/etc/nginx/dhparam
+      - /srv/client_max_body_size.conf:/etc/nginx/conf.d/client_max_body_size.conf:ro
       - /srv/nginx/certs:/etc/nginx/certs:ro
       - /var/run/docker.sock:/tmp/docker.sock:ro
     ports:
@@ -110,7 +111,7 @@ services:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID_S3} # for s3 access
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY_S3} # for s3 access
     volumes:
-      - /srv/server-backend-images:/app
+      - /srv/server-backend-images/src:/app
     working_dir: /app
     entrypoint: ["yarn", "nodemon"]
     expose:
