@@ -94,8 +94,8 @@ services:
       - VIRTUAL_HOST=api.${HOST}
       - LETSENCRYPT_HOST=api.${HOST}
       - DB_URL=${DB_URL}
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} # for send mail
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} # for send mail
     volumes:
       - /srv/server-backend-express:/app
     working_dir: /app
@@ -107,6 +107,8 @@ services:
     environment:
       - VIRTUAL_HOST=images.${HOST}
       - LETSENCRYPT_HOST=images.${HOST}
+      - AWS_ACCESS_KEY_ID_S3=${AWS_ACCESS_KEY_ID_S3} # for s3 access
+      - AWS_SECRET_ACCESS_KEY_S3=${AWS_SECRET_ACCESS_KEY_S3} # for s3 access
     volumes:
       - /srv/server-backend-images:/app
     working_dir: /app
