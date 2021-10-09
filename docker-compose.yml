@@ -97,6 +97,7 @@ services:
       - DB_URL=${DB_URL}
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} # for send mail
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} # for send mail
+      - ADMIN_LIST=${ADMIN_LIST}
     volumes:
       - /srv/server-backend-express/src:/app
     working_dir: /app
@@ -111,6 +112,10 @@ services:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID_S3} # for s3 access
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY_S3} # for s3 access
       - STAGE=${STAGE}
+      - IMAGES_DB_HOST=${IMAGES_DB_HOST}
+      - IMAGES_DB_PASSWORD=${IMAGES_DB_PASSWORD}
+      - IMAGES_DB_USER=${IMAGES_DB_USER}
+      - IMAGES_DB=${IMAGES_DB}
     volumes:
       - /srv/server-backend-images/src:/app
     working_dir: /app
