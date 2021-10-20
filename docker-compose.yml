@@ -123,6 +123,19 @@ services:
     expose:
       - 80
 
+  # 로깅 서버
+  logger:
+    image: node:14
+    environment:
+      - VIRTUAL_HOST=l.${HOST}
+      - LETSENCRYPT_HOST=l.${HOST}
+    volumes:
+      - /srv/server-logger/src:/app
+    working_dir: /app
+    entrypoint: ["yarn", "nodemon"]
+    expose:
+      - 80
+
   # 인증 서버
   auth:
     image: nginx
