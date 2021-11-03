@@ -98,6 +98,7 @@ services:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} # for send mail
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} # for send mail
       - ADMIN_LIST=${ADMIN_LIST}
+      - DRAW_TOKEN=${DRAW_TOKEN} # for unboxing.monster's api
     volumes:
       - /srv/server-backend-express/src:/app
     working_dir: /app
