@@ -35,7 +35,7 @@ services:
 
   # 프론트엔드 개발 서버
   frontend-dev:
-    image: node:14
+    image: node:16
     environment:
       - VIRTUAL_HOST=${HOST}
       - LETSENCRYPT_HOST=${HOST}
@@ -51,7 +51,7 @@ services:
 
   # 프론트엔드 상호작용 테스트 서버
   interaction:
-    image: node:14
+    image: node:16
     environment:
       - VIRTUAL_HOST=interaction.${HOST}
       - LETSENCRYPT_HOST=interaction.${HOST}
@@ -67,7 +67,7 @@ services:
 
   # 프론트엔드 상호작용 동시작업 포워딩 서버
   interaction-backend:
-    image: node:14
+    image: node:16
     environment:
       - VIRTUAL_HOST=back.${HOST}
       - LETSENCRYPT_HOST=back.${HOST}
@@ -90,7 +90,7 @@ services:
 
   # API 서버
   backend-dev-express:
-    image: node:14
+    image: node:16
     environment:
       - VIRTUAL_HOST=api.${HOST}
       - LETSENCRYPT_HOST=api.${HOST}
@@ -107,7 +107,7 @@ services:
 
   # 이미지 서버
   backend-images:
-    image: node:14
+    image: node:16
     environment:
       - VIRTUAL_HOST=images.${HOST}
       - LETSENCRYPT_HOST=images.${HOST}
@@ -127,7 +127,7 @@ services:
 
   # 로깅 서버
   logger:
-    image: node:14
+    image: node:16
     environment:
       - VIRTUAL_HOST=l.${HOST}
       - LETSENCRYPT_HOST=l.${HOST}
@@ -140,12 +140,23 @@ services:
 
   # 인증 서버
   auth:
-    image: nginx
+    image: node:16
     environment:
       - VIRTUAL_HOST=auth.${HOST}
       - LETSENCRYPT_HOST=auth.${HOST}
     volumes:
       - /srv/server-auth/public:/usr/share/nginx/html
+      - /srv/server-auth:/app
+    env_file:
+      - /srv/server-auth/.env
+    working_dir: /app
+    entrypoint: ["yarn", "nodemon"]
+    expose:
+      - 80
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
 
 volumes:
   conf:
