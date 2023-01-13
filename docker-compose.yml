@@ -15,6 +15,7 @@ services:
     ports:
       - 80:80
       - 443:443
+    restart: always
 
   # Let's encrypt 자동화 컨테이너
   letsencrypt:
@@ -32,10 +33,12 @@ services:
     environment:
       - DEFAULT_EMAIL=${EMAIL}
       - NGINX_PROXY_CONTAINER=nginx-proxy
+    restart: always
 
   # 프론트엔드 개발 서버
   frontend-dev:
-    image: node:16
+    image: node:16-alpine
+    container_name: frontend-dev
     environment:
       - VIRTUAL_HOST=${HOST}
       - LETSENCRYPT_HOST=${HOST}
@@ -49,48 +52,49 @@ services:
     stdin_open: true
     restart: always
 
-  # 프론트엔드 상호작용 테스트 서버
-  interaction:
-    image: node:16
-    environment:
-      - VIRTUAL_HOST=interaction.${HOST}
-      - LETSENCRYPT_HOST=interaction.${HOST}
-    volumes:
-      - /srv/server-interaction/src:/app
-    working_dir: /app
-    entrypoint: ["yarn", "start"]
-    expose:
-      - 3000
-    tty: true
-    stdin_open: true
-    restart: always
+  # # 프론트엔드 상호작용 테스트 서버
+  # interaction:
+  #   image: node:16-alpine
+  #   environment:
+  #     - VIRTUAL_HOST=interaction.${HOST}
+  #     - LETSENCRYPT_HOST=interaction.${HOST}
+  #   volumes:
+  #     - /srv/server-interaction/src:/app
+  #   working_dir: /app
+  #   entrypoint: ["yarn", "start"]
+  #   expose:
+  #     - 3000
+  #   tty: true
+  #   stdin_open: true
+  #   restart: always
 
-  # 프론트엔드 상호작용 동시작업 포워딩 서버
-  interaction-backend:
-    image: node:16
-    environment:
-      - VIRTUAL_HOST=back.${HOST}
-      - LETSENCRYPT_HOST=back.${HOST}
-    volumes:
-      - /srv/server-ot:/app
-    working_dir: /app
-    entrypoint: ["yarn", "nodemon"]
-    expose:
-      - 80
+  # # 프론트엔드 상호작용 동시작업 포워딩 서버
+  # interaction-backend:
+  #   image: node:16-alpine
+  #   environment:
+  #     - VIRTUAL_HOST=back.${HOST}
+  #     - LETSENCRYPT_HOST=back.${HOST}
+  #   volumes:
+  #     - /srv/server-ot:/app
+  #   working_dir: /app
+  #   entrypoint: ["yarn", "nodemon"]
+  #   expose:
+  #     - 80
 
-  # 질문 추천 서버
-  suggestion:
-    build: /srv/server-suggestion
-    environment:
-      - VIRTUAL_HOST=suggestion.${HOST}
-      - VIRTUAL_PORT=5000 # 왜 이것만 이렇게 해줘야 되는지??
-      - LETSENCRYPT_HOST=suggestion.${HOST}
-    volumes:
-      - /srv/server-suggestion:/app
+  # # 질문 추천 서버
+  # suggestion:
+  #   build: /srv/server-suggestion
+  #   environment:
+  #     - VIRTUAL_HOST=suggestion.${HOST}
+  #     - VIRTUAL_PORT=5000 # 왜 이것만 이렇게 해줘야 되는지??
+  #     - LETSENCRYPT_HOST=suggestion.${HOST}
+  #   volumes:
+  #     - /srv/server-suggestion:/app
 
   # API 서버
   backend-dev-express:
-    image: node:16
+    image: node:16-alpine
+    container_name: backend-dev
     environment:
       - VIRTUAL_HOST=api.${HOST}
       - LETSENCRYPT_HOST=api.${HOST}
@@ -104,10 +108,12 @@ services:
       - /srv/server-backend-express/src:/app
     working_dir: /app
     entrypoint: ["yarn", "nodemon"]
+    restart: always
 
   # 이미지 서버
   backend-images:
-    image: node:16
+    image: node:16-alpine
+    container_name: backend-images
     environment:
       - VIRTUAL_HOST=images.${HOST}
       - LETSENCRYPT_HOST=images.${HOST}
@@ -122,12 +128,14 @@ services:
       - /srv/server-backend-images/src:/app
     working_dir: /app
     entrypoint: ["yarn", "nodemon"]
+    restart: always
     expose:
       - 80
 
   # 로깅 서버
   logger:
-    image: node:16
+    image: node:16-alpine
+    container_name: logger
     environment:
       - VIRTUAL_HOST=l.${HOST}
       - LETSENCRYPT_HOST=l.${HOST}
@@ -135,12 +143,14 @@ services:
       - /srv/server-logger/src:/app
     working_dir: /app
     entrypoint: ["yarn", "nodemon"]
+    restart: always
     expose:
       - 80
 
   # 인증 서버
   auth:
-    image: node:16
+    image: node:16-alpine
+    container_name: auth
     environment:
       - VIRTUAL_HOST=auth.${HOST}
       - LETSENCRYPT_HOST=auth.${HOST}
@@ -151,6 +161,7 @@ services:
       - /srv/server-auth/.env
     working_dir: /app
     entrypoint: ["yarn", "nodemon"]
+    restart: always
     expose:
       - 80
     logging:
